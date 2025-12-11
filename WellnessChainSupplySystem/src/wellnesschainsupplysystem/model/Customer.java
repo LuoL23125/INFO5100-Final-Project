@@ -9,8 +9,8 @@ package wellnesschainsupplysystem.model;
  * @author luole
  */
 public class Customer {
-    
-private int id;
+
+    private int id;
     private String name;
     private String phone;
     private String email;
@@ -40,7 +40,7 @@ private int id;
 
     public void setId(int id) {
         this.id = id;
-    }    
+    }
 
     public String getName() {
         return name;
@@ -76,12 +76,7 @@ private int id;
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
-                ", notes='" + notes + '\'' +
-                '}';
+        return name + " (ID " + id + ")";
     }
+
 }

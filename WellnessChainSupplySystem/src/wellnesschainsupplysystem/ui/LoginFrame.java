@@ -104,7 +104,7 @@ public class LoginFrame extends JFrame {
         openDashboardForUser(user);
     }
 
- private void openDashboardForUser(UserAccount user) {
+private void openDashboardForUser(UserAccount user) {
     Role role = user.getRole();
 
     if (role == Role.BRANCH_ADMIN) {
@@ -112,6 +112,9 @@ public class LoginFrame extends JFrame {
         dash.setVisible(true);
     } else if (role == Role.SUPPLIER_ADMIN) {
         SupplierAdminDashboardFrame dash = new SupplierAdminDashboardFrame(user);
+        dash.setVisible(true);
+    } else if (role == Role.THERAPIST) {
+        TherapistDashboardFrame dash = new TherapistDashboardFrame(user);
         dash.setVisible(true);
     } else {
         JOptionPane.showMessageDialog(this,
@@ -122,6 +125,7 @@ public class LoginFrame extends JFrame {
 
     dispose();
 }
+
 
 
 }

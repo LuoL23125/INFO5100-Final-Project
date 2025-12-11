@@ -75,4 +75,12 @@ public class UserAccount {
     public void setEmail(String email) {
         this.email = email;
     }
+    
+    @Override
+    public String toString() {
+    return (fullName != null && !fullName.isEmpty()) ? fullName : username;
 }
+
+}
+
+

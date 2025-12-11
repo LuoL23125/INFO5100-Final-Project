@@ -51,4 +51,40 @@ public class UserAccountDao {
 
         return null; // no user found
     }
+    
+    public UserAccount findById(int id) {
+    String sql = "SELECT id, username, password, role, full_name, email " +
+                 "FROM user_account WHERE id = ?";
+
+    try (Connection conn = DBConnectionUtil.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setInt(1, id);
+
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                UserAccount user = new UserAccount();
+                user.setId(rs.getInt("id"));
+                user.setUsername(rs.getString("username"));
+                user.setPassword(rs.getString("password"));
+                String roleStr = rs.getString("role");
+                try {
+                    user.setRole(Role.valueOf(roleStr));
+                } catch (IllegalArgumentException ex) {
+                    user.setRole(null);
+                }
+                user.setFullName(rs.getString("full_name"));
+                user.setEmail(rs.getString("email"));
+                return user;
+            }
+        }
+
+    } catch (SQLException e) {
+        System.err.println("Error fetching user by id");
+        e.printStackTrace();
+    }
+
+    return null;
+}
+
 }

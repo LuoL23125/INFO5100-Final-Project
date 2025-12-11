@@ -5,14 +5,14 @@ import wellnesschainsupplysystem.model.UserAccount;
 import javax.swing.*;
 import java.awt.*;
 
-public class SupplierAdminDashboardFrame extends JFrame {
+public class TherapistDashboardFrame extends JFrame {
 
     private final UserAccount currentUser;
 
-    public SupplierAdminDashboardFrame(UserAccount user) {
+    public TherapistDashboardFrame(UserAccount user) {
         this.currentUser = user;
 
-        setTitle("Supplier Admin Dashboard - " + currentUser.getUsername());
+        setTitle("Therapist Dashboard - " + currentUser.getUsername());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 250);
         setLocationRelativeTo(null);
@@ -29,18 +29,12 @@ public class SupplierAdminDashboardFrame extends JFrame {
                 (currentUser.getFullName() != null ? currentUser.getFullName() : currentUser.getUsername()));
         lblWelcome.setFont(lblWelcome.getFont().deriveFont(Font.BOLD, 14f));
 
-        JButton btnManageProducts = new JButton("Manage Products");
+        JButton btnMyAppointments = new JButton("View My Appointments");
         JButton btnLogout = new JButton("Logout");
-        JButton btnViewPOs = new JButton("View Purchase Orders");
 
-        btnManageProducts.addActionListener(e -> {
-            ProductManagementFrame frame = new ProductManagementFrame();
+        btnMyAppointments.addActionListener(e -> {
+            TherapistAppointmentsFrame frame = new TherapistAppointmentsFrame(currentUser);
             frame.setVisible(true);
-        });
-        
-        btnViewPOs.addActionListener(e -> {
-        SupplierPurchaseOrderFrame frame = new SupplierPurchaseOrderFrame(currentUser);
-        frame.setVisible(true);
         });
 
         btnLogout.addActionListener(e -> onLogout());
@@ -49,10 +43,7 @@ public class SupplierAdminDashboardFrame extends JFrame {
         panel.add(lblWelcome, gbc);
 
         gbc.gridy++;
-        panel.add(btnManageProducts, gbc);
-        
-        gbc.gridy++;
-        panel.add(btnViewPOs, gbc);
+        panel.add(btnMyAppointments, gbc);
 
         gbc.gridy++;
         panel.add(btnLogout, gbc);

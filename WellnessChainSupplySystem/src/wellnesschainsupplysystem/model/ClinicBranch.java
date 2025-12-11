@@ -80,13 +80,8 @@ public class ClinicBranch {
     }
 
     @Override
-    public String toString() {
-        return "ClinicBranch{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", city='" + city + '\'' +
-                ", openingTime='" + openingTime + '\'' +
-                ", closingTime='" + closingTime + '\'' +
-                '}';
-    }
+public String toString() {
+    return name + " (" + city + ")";
+}
+
 }
