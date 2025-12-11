@@ -4,7 +4,7 @@
  */
 package wellnesschainsupplysystem;
 
-import wellnesschainsupplysystem.ui.CustomerManagementFrame;
+import wellnesschainsupplysystem.ui.LoginFrame;
 
 import javax.swing.*;
 
@@ -19,12 +19,11 @@ public class WellnessChainSupplySystem {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-         System.out.println("Wellness Chain Supply System - Starting...");
+      System.out.println("Wellness Chain Supply System - Starting...");
 
-        // Start Swing UI on Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {
-            CustomerManagementFrame frame = new CustomerManagementFrame();
-            frame.setVisible(true);
+            LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
         });
     }
 }
