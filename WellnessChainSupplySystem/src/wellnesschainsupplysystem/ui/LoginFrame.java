@@ -104,21 +104,24 @@ public class LoginFrame extends JFrame {
         openDashboardForUser(user);
     }
 
-   private void openDashboardForUser(UserAccount user) {
+ private void openDashboardForUser(UserAccount user) {
     Role role = user.getRole();
 
     if (role == Role.BRANCH_ADMIN) {
         BranchAdminDashboardFrame dash = new BranchAdminDashboardFrame(user);
         dash.setVisible(true);
+    } else if (role == Role.SUPPLIER_ADMIN) {
+        SupplierAdminDashboardFrame dash = new SupplierAdminDashboardFrame(user);
+        dash.setVisible(true);
     } else {
         JOptionPane.showMessageDialog(this,
-                "Role " + role + " is not wired to a specific dashboard yet.\n" +
-                "For now, only BRANCH_ADMIN has a full dashboard.",
+                "Role " + role + " is not wired to a specific dashboard yet.",
                 "Info",
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
     dispose();
 }
+
 
 }
