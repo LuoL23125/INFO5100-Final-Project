@@ -104,23 +104,21 @@ public class LoginFrame extends JFrame {
         openDashboardForUser(user);
     }
 
-    private void openDashboardForUser(UserAccount user) {
-        Role role = user.getRole();
+   private void openDashboardForUser(UserAccount user) {
+    Role role = user.getRole();
 
-        if (role == Role.BRANCH_ADMIN) {
-            // Open Customer Management UI for branch admin
-            CustomerManagementFrame frame = new CustomerManagementFrame();
-            frame.setVisible(true);
-        } else {
-            // For now, just show a placeholder
-            JOptionPane.showMessageDialog(this,
-                    "Role " + role + " is not wired to a specific dashboard yet.\n" +
-                    "For now, only BRANCH_ADMIN opens the customer UI.",
-                    "Info",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
-
-        // Close the login window
-        dispose();
+    if (role == Role.BRANCH_ADMIN) {
+        BranchAdminDashboardFrame dash = new BranchAdminDashboardFrame(user);
+        dash.setVisible(true);
+    } else {
+        JOptionPane.showMessageDialog(this,
+                "Role " + role + " is not wired to a specific dashboard yet.\n" +
+                "For now, only BRANCH_ADMIN has a full dashboard.",
+                "Info",
+                JOptionPane.INFORMATION_MESSAGE);
     }
+
+    dispose();
+}
+
 }

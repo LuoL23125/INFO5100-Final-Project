@@ -25,15 +25,17 @@ public class CustomerManagementFrame extends JFrame {
     private JButton btnDelete;
     private JButton btnRefresh;
 
-    public CustomerManagementFrame() {
-        setTitle("Customer Management - Wellness Chain");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
-        setLocationRelativeTo(null); // center on screen
+  public CustomerManagementFrame() {
+    setTitle("Customer Management - Wellness Chain");
+    // ❌ was EXIT_ON_CLOSE before
+    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+    setSize(800, 600);
+    setLocationRelativeTo(null); // center on screen
 
-        initComponents();
-        loadCustomers();
-    }
+    initComponents();
+    loadCustomers();
+}
+
 
     private void initComponents() {
         // ====== Table ======
