@@ -12,16 +12,59 @@ import java.util.List;
 
 public class PurchaseOrderDao {
 
+    public static class PoItemInfo {
+
+        private final int productId;
+        private final int quantity;
+
+        public PoItemInfo(int productId, int quantity) {
+            this.productId = productId;
+            this.quantity = quantity;
+        }
+
+        public int getProductId() {
+            return productId;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+    }
+
+    public PoItemInfo getSingleItemForPo(int poId) {
+        String sql = "SELECT product_id, quantity "
+                + "FROM purchase_order_item WHERE purchase_order_id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, poId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int productId = rs.getInt("product_id");
+                    int quantity = rs.getInt("quantity");
+                    return new PoItemInfo(productId, quantity);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching PO item for poId=" + poId);
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     // Create PO with a single product item
     public int createWithSingleItem(int branchId, int createdByUserId,
-                                    int productId, int quantity, BigDecimal unitPrice) {
-        String poSql = "INSERT INTO purchase_order " +
-                "(branch_id, status, created_at, submitted_at, created_by_user_id) " +
-                "VALUES (?, ?, ?, ?, ?)";
+            int productId, int quantity, BigDecimal unitPrice) {
+        String poSql = "INSERT INTO purchase_order "
+                + "(branch_id, status, created_at, submitted_at, created_by_user_id) "
+                + "VALUES (?, ?, ?, ?, ?)";
 
-        String itemSql = "INSERT INTO purchase_order_item " +
-                "(purchase_order_id, product_id, quantity, unit_price) " +
-                "VALUES (?, ?, ?, ?)";
+        String itemSql = "INSERT INTO purchase_order_item "
+                + "(purchase_order_id, product_id, quantity, unit_price) "
+                + "VALUES (?, ?, ?, ?)";
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -72,17 +115,16 @@ public class PurchaseOrderDao {
     public List<PurchaseOrder> findByBranch(int branchId) {
         List<PurchaseOrder> list = new ArrayList<>();
 
-        String sql = "SELECT po.id, po.branch_id, po.status, po.created_at, " +
-                "b.name AS branch_name, p.name AS product_name, poi.quantity " +
-                "FROM purchase_order po " +
-                "JOIN clinic_branch b ON po.branch_id = b.id " +
-                "JOIN purchase_order_item poi ON poi.purchase_order_id = po.id " +
-                "JOIN product p ON p.id = poi.product_id " +
-                "WHERE po.branch_id = ? " +
-                "ORDER BY po.created_at DESC";
+        String sql = "SELECT po.id, po.branch_id, po.status, po.created_at, "
+                + "b.name AS branch_name, p.name AS product_name, poi.quantity "
+                + "FROM purchase_order po "
+                + "JOIN clinic_branch b ON po.branch_id = b.id "
+                + "JOIN purchase_order_item poi ON poi.purchase_order_id = po.id "
+                + "JOIN product p ON p.id = poi.product_id "
+                + "WHERE po.branch_id = ? "
+                + "ORDER BY po.created_at DESC";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, branchId);
 
@@ -115,17 +157,15 @@ public class PurchaseOrderDao {
     public List<PurchaseOrder> findAllWithSummary() {
         List<PurchaseOrder> list = new ArrayList<>();
 
-        String sql = "SELECT po.id, po.branch_id, po.status, po.created_at, " +
-                "b.name AS branch_name, p.name AS product_name, poi.quantity " +
-                "FROM purchase_order po " +
-                "JOIN clinic_branch b ON po.branch_id = b.id " +
-                "JOIN purchase_order_item poi ON poi.purchase_order_id = po.id " +
-                "JOIN product p ON p.id = poi.product_id " +
-                "ORDER BY po.created_at DESC";
+        String sql = "SELECT po.id, po.branch_id, po.status, po.created_at, "
+                + "b.name AS branch_name, p.name AS product_name, poi.quantity "
+                + "FROM purchase_order po "
+                + "JOIN clinic_branch b ON po.branch_id = b.id "
+                + "JOIN purchase_order_item poi ON poi.purchase_order_id = po.id "
+                + "JOIN product p ON p.id = poi.product_id "
+                + "ORDER BY po.created_at DESC";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 PurchaseOrder po = new PurchaseOrder();
@@ -151,14 +191,13 @@ public class PurchaseOrderDao {
     }
 
     public void updateStatus(int poId, PurchaseOrderStatus newStatus, String supplierComment) {
-        String sql = "UPDATE purchase_order " +
-                "SET status = ?, reviewed_at = ?, supplier_comment = ? " +
-                "WHERE id = ?";
+        String sql = "UPDATE purchase_order "
+                + "SET status = ?, reviewed_at = ?, supplier_comment = ? "
+                + "WHERE id = ?";
 
         LocalDateTime now = LocalDateTime.now();
 
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, newStatus.name());
             stmt.setTimestamp(2, Timestamp.valueOf(now));

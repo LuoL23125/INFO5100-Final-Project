@@ -11,11 +11,10 @@ public class BranchInventoryDao {
 
     public List<BranchInventory> findByBranchId(int branchId) {
         List<BranchInventory> list = new ArrayList<>();
-        String sql = "SELECT id, branch_id, product_id, quantity_on_hand, reorder_threshold " +
-                     "FROM branch_inventory WHERE branch_id = ?";
+        String sql = "SELECT id, branch_id, product_id, quantity_on_hand, reorder_threshold "
+                + "FROM branch_inventory WHERE branch_id = ?";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, branchId);
 
@@ -40,12 +39,11 @@ public class BranchInventoryDao {
     }
 
     public void create(BranchInventory inv) {
-        String sql = "INSERT INTO branch_inventory " +
-                     "(branch_id, product_id, quantity_on_hand, reorder_threshold) " +
-                     "VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO branch_inventory "
+                + "(branch_id, product_id, quantity_on_hand, reorder_threshold) "
+                + "VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, inv.getBranchId());
             stmt.setInt(2, inv.getProductId());
@@ -70,12 +68,11 @@ public class BranchInventoryDao {
     }
 
     public void update(BranchInventory inv) {
-        String sql = "UPDATE branch_inventory " +
-                     "SET quantity_on_hand = ?, reorder_threshold = ? " +
-                     "WHERE id = ?";
+        String sql = "UPDATE branch_inventory "
+                + "SET quantity_on_hand = ?, reorder_threshold = ? "
+                + "WHERE id = ?";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, inv.getQuantityOnHand());
             stmt.setInt(2, inv.getReorderThreshold());
@@ -95,8 +92,7 @@ public class BranchInventoryDao {
     public void delete(int id) {
         String sql = "DELETE FROM branch_inventory WHERE id = ?";
 
-        try (Connection conn = DBConnectionUtil.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
 
@@ -110,4 +106,47 @@ public class BranchInventoryDao {
             e.printStackTrace();
         }
     }
+
+    public BranchInventory findByBranchAndProduct(int branchId, int productId) {
+        String sql = "SELECT id, branch_id, product_id, quantity_on_hand, reorder_threshold "
+                + "FROM branch_inventory WHERE branch_id = ? AND product_id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, branchId);
+            stmt.setInt(2, productId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    BranchInventory inv = new BranchInventory();
+                    inv.setId(rs.getInt("id"));
+                    inv.setBranchId(rs.getInt("branch_id"));
+                    inv.setProductId(rs.getInt("product_id"));
+                    inv.setQuantityOnHand(rs.getInt("quantity_on_hand"));
+                    inv.setReorderThreshold(rs.getInt("reorder_threshold"));
+                    return inv;
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching branch_inventory for branchId="
+                    + branchId + ", productId=" + productId);
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void addStockForShipment(int branchId, int productId, int quantityToAdd, int defaultThreshold) {
+        BranchInventory inv = findByBranchAndProduct(branchId, productId);
+
+        if (inv == null) {
+            inv = new BranchInventory(branchId, productId, quantityToAdd, defaultThreshold);
+            create(inv);
+        } else {
+            inv.setQuantityOnHand(inv.getQuantityOnHand() + quantityToAdd);
+            update(inv);
+        }
+    }
+
 }

@@ -3,6 +3,8 @@ package wellnesschainsupplysystem.model;
 public enum PurchaseOrderStatus {
     SUBMITTED,
     APPROVED,
-    REJECTED,
-    FULFILLED
+    PACKED,
+    SHIPPED,
+    DELIVERED,
+    REJECTED
 }

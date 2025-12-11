@@ -108,14 +108,13 @@ private void openDashboardForUser(UserAccount user) {
     Role role = user.getRole();
 
     if (role == Role.BRANCH_ADMIN) {
-        BranchAdminDashboardFrame dash = new BranchAdminDashboardFrame(user);
-        dash.setVisible(true);
+        new BranchAdminDashboardFrame(user).setVisible(true);
     } else if (role == Role.SUPPLIER_ADMIN) {
-        SupplierAdminDashboardFrame dash = new SupplierAdminDashboardFrame(user);
-        dash.setVisible(true);
+        new SupplierAdminDashboardFrame(user).setVisible(true);
+    } else if (role == Role.SUPPLIER_STAFF) {
+        new SupplierStaffDashboardFrame(user).setVisible(true);
     } else if (role == Role.THERAPIST) {
-        TherapistDashboardFrame dash = new TherapistDashboardFrame(user);
-        dash.setVisible(true);
+        new TherapistDashboardFrame(user).setVisible(true);
     } else {
         JOptionPane.showMessageDialog(this,
                 "Role " + role + " is not wired to a specific dashboard yet.",
@@ -125,6 +124,7 @@ private void openDashboardForUser(UserAccount user) {
 
     dispose();
 }
+
 
 
 
