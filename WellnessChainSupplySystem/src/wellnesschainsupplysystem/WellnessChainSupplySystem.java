@@ -4,7 +4,9 @@
  */
 package wellnesschainsupplysystem;
 
-import wellnesschainsupplysystem.util.DBConnectionUtil;
+import wellnesschainsupplysystem.ui.CustomerManagementFrame;
+
+import javax.swing.*;
 
 /**
  *
@@ -17,8 +19,13 @@ public class WellnessChainSupplySystem {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("Wellness Chain Supply System - Starting...");
-        DBConnectionUtil.testConnection();
+         System.out.println("Wellness Chain Supply System - Starting...");
+
+        // Start Swing UI on Event Dispatch Thread
+        SwingUtilities.invokeLater(() -> {
+            CustomerManagementFrame frame = new CustomerManagementFrame();
+            frame.setVisible(true);
+        });
     }
-    
 }
+    
