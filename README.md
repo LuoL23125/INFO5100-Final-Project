@@ -1,0 +1,3 @@
+**Problem:** Small wellness businesses struggle to coordinate multi-location operations, staff scheduling, client appointments, and supply inventory. Communication between branches and suppliers relies on manual processes (phone calls, paper orders), leading to stock shortages, scheduling conflicts, and inefficient operations.
+
+**Solution:** A unified platform where branch admins manage appointments and staff, therapists handle their schedules and clients, and suppliers fulfill inventory orders — all through a structured work request system.
