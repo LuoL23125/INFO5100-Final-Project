@@ -2,23 +2,19 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
  */
-package wellnesschainsupplysystem;
-
-import wellnesschainsupplysystem.util.DBConnectionUtil;
+package javaapplication9;
 
 /**
  *
  * @author luole
  */
-public class WellnessChainSupplySystem {
+public class JavaApplication9 {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("Wellness Chain Supply System - Starting...");
-        DBConnectionUtil.testConnection();
     }
     
 }
