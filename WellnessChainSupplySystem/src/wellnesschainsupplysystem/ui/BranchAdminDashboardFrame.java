@@ -1,11 +1,6 @@
 package wellnesschainsupplysystem.ui;
 
 import wellnesschainsupplysystem.model.UserAccount;
-import wellnesschainsupplysystem.ui.AppointmentManagementFrame;
-
-
-
-
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +14,7 @@ public class BranchAdminDashboardFrame extends JFrame {
 
         setTitle("Branch Admin Dashboard - " + currentUser.getUsername());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 320);
+        setSize(400, 380);  // Increased height for new button
         setLocationRelativeTo(null);
 
         initComponents();
@@ -28,7 +23,8 @@ public class BranchAdminDashboardFrame extends JFrame {
     private void initComponents() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel lblWelcome = new JLabel("Welcome, " +
                 (currentUser.getFullName() != null ? currentUser.getFullName() : currentUser.getUsername()));
@@ -36,23 +32,11 @@ public class BranchAdminDashboardFrame extends JFrame {
 
         JButton btnManageBranches = new JButton("Manage Clinic Branches");
         JButton btnManageCustomers = new JButton("Manage Customers");
-        JButton btnLogout = new JButton("Logout");
+        JButton btnManageTherapists = new JButton("Manage Therapists");  // NEW
         JButton btnManageInventory = new JButton("Manage Inventory");
         JButton btnManagePOs = new JButton("Manage Purchase Orders");
         JButton btnManageAppointments = new JButton("Manage Appointments");
-        
-        btnManageAppointments.addActionListener(e -> {
-        AppointmentManagementFrame frame = new AppointmentManagementFrame(currentUser);
-        frame.setVisible(true);
-        });
-
-        
-    
-        
-        btnManagePOs.addActionListener(e -> {
-        PurchaseOrderManagementFrame frame = new PurchaseOrderManagementFrame(currentUser);
-        frame.setVisible(true);
-        });
+        JButton btnLogout = new JButton("Logout");
 
         btnManageBranches.addActionListener(e -> {
             BranchManagementFrame frame = new BranchManagementFrame();
@@ -64,14 +48,30 @@ public class BranchAdminDashboardFrame extends JFrame {
             frame.setVisible(true);
         });
 
-        btnLogout.addActionListener(e -> onLogout());
-        
-        btnManageInventory.addActionListener(e -> {
-        BranchInventoryFrame frame = new BranchInventoryFrame();
-        frame.setVisible(true);
+        // NEW: Therapist Management
+        btnManageTherapists.addActionListener(e -> {
+            TherapistManagementFrame frame = new TherapistManagementFrame();
+            frame.setVisible(true);
         });
 
-        gbc.gridx = 0; 
+        btnManageInventory.addActionListener(e -> {
+            BranchInventoryFrame frame = new BranchInventoryFrame();
+            frame.setVisible(true);
+        });
+
+        btnManagePOs.addActionListener(e -> {
+            PurchaseOrderManagementFrame frame = new PurchaseOrderManagementFrame(currentUser);
+            frame.setVisible(true);
+        });
+
+        btnManageAppointments.addActionListener(e -> {
+            AppointmentManagementFrame frame = new AppointmentManagementFrame(currentUser);
+            frame.setVisible(true);
+        });
+
+        btnLogout.addActionListener(e -> onLogout());
+
+        gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(lblWelcome, gbc);
 
@@ -80,13 +80,16 @@ public class BranchAdminDashboardFrame extends JFrame {
 
         gbc.gridy++;
         panel.add(btnManageCustomers, gbc);
-        
+
+        gbc.gridy++;
+        panel.add(btnManageTherapists, gbc);  // NEW
+
         gbc.gridy++;
         panel.add(btnManageInventory, gbc);
-        
+
         gbc.gridy++;
         panel.add(btnManagePOs, gbc);
-        
+
         gbc.gridy++;
         panel.add(btnManageAppointments, gbc);
 
@@ -103,10 +106,7 @@ public class BranchAdminDashboardFrame extends JFrame {
                 JOptionPane.YES_NO_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
-            // Close this dashboard
             dispose();
-
-            // Return to login screen
             SwingUtilities.invokeLater(() -> {
                 LoginFrame loginFrame = new LoginFrame();
                 loginFrame.setVisible(true);

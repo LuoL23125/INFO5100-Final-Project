@@ -7,6 +7,8 @@ import wellnesschainsupplysystem.util.DBConnectionUtil;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;   // ADD THIS
+import java.util.List;        // ADD THIS
 
 public class WorkRequestDao {
 
@@ -104,6 +106,111 @@ public class WorkRequestDao {
             System.err.println("Error updating SHIPMENT work_request for purchase order");
             e.printStackTrace();
         }
+    }
+    
+    // ADD these methods to your existing WorkRequestDao.java
+
+    // Find all work requests with joined info
+    public List<WorkRequest> findAll() {
+        List<WorkRequest> list = new ArrayList<>();
+        String sql = "SELECT id, type, status, created_at, updated_at, " +
+                     "created_by_user_id, related_po_id, comments " +
+                     "FROM work_request ORDER BY created_at DESC";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                WorkRequest wr = mapRow(rs);
+                list.add(wr);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching all work requests");
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    // Find work requests by user (creator)
+    public List<WorkRequest> findByUserId(int userId) {
+        List<WorkRequest> list = new ArrayList<>();
+        String sql = "SELECT id, type, status, created_at, updated_at, " +
+                     "created_by_user_id, related_po_id, comments " +
+                     "FROM work_request WHERE created_by_user_id = ? " +
+                     "ORDER BY created_at DESC";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    WorkRequest wr = mapRow(rs);
+                    list.add(wr);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching work requests for userId=" + userId);
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    // Find work requests by purchase order
+    public List<WorkRequest> findByPurchaseOrderId(int poId) {
+        List<WorkRequest> list = new ArrayList<>();
+        String sql = "SELECT id, type, status, created_at, updated_at, " +
+                     "created_by_user_id, related_po_id, comments " +
+                     "FROM work_request WHERE related_po_id = ? " +
+                     "ORDER BY created_at DESC";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, poId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    WorkRequest wr = mapRow(rs);
+                    list.add(wr);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching work requests for poId=" + poId);
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    private WorkRequest mapRow(ResultSet rs) throws SQLException {
+        WorkRequest wr = new WorkRequest();
+        wr.setId(rs.getInt("id"));
+        wr.setType(WorkRequestType.valueOf(rs.getString("type")));
+        wr.setStatus(WorkRequestStatus.valueOf(rs.getString("status")));
+
+        Timestamp ct = rs.getTimestamp("created_at");
+        if (ct != null) wr.setCreatedAt(ct.toLocalDateTime());
+
+        Timestamp ut = rs.getTimestamp("updated_at");
+        if (ut != null) wr.setUpdatedAt(ut.toLocalDateTime());
+
+        wr.setCreatedByUserId(rs.getInt("created_by_user_id"));
+
+        int poId = rs.getInt("related_po_id");
+        if (!rs.wasNull()) {
+            wr.setRelatedPurchaseOrderId(poId);
+        }
+
+        wr.setComments(rs.getString("comments"));
+        return wr;
     }
 
 }

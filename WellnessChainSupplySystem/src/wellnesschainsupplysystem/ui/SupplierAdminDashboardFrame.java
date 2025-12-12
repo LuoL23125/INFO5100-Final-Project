@@ -14,7 +14,7 @@ public class SupplierAdminDashboardFrame extends JFrame {
 
         setTitle("Supplier Admin Dashboard - " + currentUser.getUsername());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 250);
+        setSize(400, 300);  // Increased height
         setLocationRelativeTo(null);
 
         initComponents();
@@ -23,36 +23,48 @@ public class SupplierAdminDashboardFrame extends JFrame {
     private void initComponents() {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(8, 10, 8, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel lblWelcome = new JLabel("Welcome, " +
                 (currentUser.getFullName() != null ? currentUser.getFullName() : currentUser.getUsername()));
         lblWelcome.setFont(lblWelcome.getFont().deriveFont(Font.BOLD, 14f));
 
         JButton btnManageProducts = new JButton("Manage Products");
-        JButton btnLogout = new JButton("Logout");
         JButton btnViewPOs = new JButton("View Purchase Orders");
+        JButton btnViewWorkRequests = new JButton("View Work Requests");  // NEW
+        JButton btnLogout = new JButton("Logout");
 
         btnManageProducts.addActionListener(e -> {
             ProductManagementFrame frame = new ProductManagementFrame();
             frame.setVisible(true);
         });
-        
+
         btnViewPOs.addActionListener(e -> {
-        SupplierPurchaseOrderFrame frame = new SupplierPurchaseOrderFrame(currentUser);
-        frame.setVisible(true);
+            SupplierPurchaseOrderFrame frame = new SupplierPurchaseOrderFrame(currentUser);
+            frame.setVisible(true);
+        });
+
+        // NEW: View Work Requests
+        btnViewWorkRequests.addActionListener(e -> {
+            WorkRequestViewFrame frame = new WorkRequestViewFrame(currentUser);
+            frame.setVisible(true);
         });
 
         btnLogout.addActionListener(e -> onLogout());
 
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         panel.add(lblWelcome, gbc);
 
         gbc.gridy++;
         panel.add(btnManageProducts, gbc);
-        
+
         gbc.gridy++;
         panel.add(btnViewPOs, gbc);
+
+        gbc.gridy++;
+        panel.add(btnViewWorkRequests, gbc);  // NEW
 
         gbc.gridy++;
         panel.add(btnLogout, gbc);

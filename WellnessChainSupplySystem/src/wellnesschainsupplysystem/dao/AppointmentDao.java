@@ -144,4 +144,85 @@ public class AppointmentDao {
         ap.setCustomerName(rs.getString("customer_name"));
         return ap;
     }
+    
+    // ADD these methods to your existing AppointmentDao.java
+
+    // Full update appointment
+    public void update(Appointment appt) {
+        String sql = "UPDATE appointment SET branch_id = ?, therapist_user_id = ?, " +
+                     "customer_id = ?, start_time = ?, end_time = ?, status = ?, notes = ? " +
+                     "WHERE id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, appt.getBranchId());
+            stmt.setInt(2, appt.getTherapistUserId());
+            stmt.setInt(3, appt.getCustomerId());
+            stmt.setTimestamp(4, Timestamp.valueOf(appt.getStartTime()));
+            stmt.setTimestamp(5, Timestamp.valueOf(appt.getEndTime()));
+            stmt.setString(6, appt.getStatus().name());
+            stmt.setString(7, appt.getNotes());
+            stmt.setInt(8, appt.getId());
+
+            int affected = stmt.executeUpdate();
+            if (affected == 0) {
+                System.out.println("⚠️ No rows updated for appointment id=" + appt.getId());
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error updating appointment");
+            e.printStackTrace();
+        }
+    }
+
+    // Delete appointment
+    public void delete(int id) {
+        String sql = "DELETE FROM appointment WHERE id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            int affected = stmt.executeUpdate();
+            if (affected == 0) {
+                System.out.println("⚠️ No rows deleted for appointment id=" + id);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error deleting appointment");
+            e.printStackTrace();
+        }
+    }
+
+    // Find appointment by ID
+    public Appointment findById(int id) {
+        String sql = "SELECT a.id, a.branch_id, a.therapist_user_id, a.customer_id, " +
+                "a.start_time, a.end_time, a.status, a.notes, " +
+                "b.name AS branch_name, ua.full_name AS therapist_name, c.name AS customer_name " +
+                "FROM appointment a " +
+                "JOIN clinic_branch b ON a.branch_id = b.id " +
+                "JOIN user_account ua ON a.therapist_user_id = ua.id " +
+                "JOIN customer c ON a.customer_id = c.id " +
+                "WHERE a.id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching appointment by id=" + id);
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

@@ -211,4 +211,83 @@ public class PurchaseOrderDao {
             e.printStackTrace();
         }
     }
+    
+    // ADD these methods to your existing PurchaseOrderDao.java
+
+    // Delete purchase order and related items/work requests
+    public boolean delete(int poId) {
+        // First delete related work requests
+        String deleteWrSql = "DELETE FROM work_request WHERE related_po_id = ?";
+        // Then delete order items (should cascade, but just in case)
+        String deleteItemsSql = "DELETE FROM purchase_order_item WHERE purchase_order_id = ?";
+        // Finally delete the purchase order
+        String deletePoSql = "DELETE FROM purchase_order WHERE id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection()) {
+            conn.setAutoCommit(false);
+
+            try {
+                // Delete work requests
+                try (PreparedStatement stmt = conn.prepareStatement(deleteWrSql)) {
+                    stmt.setInt(1, poId);
+                    stmt.executeUpdate();
+                }
+
+                // Delete order items
+                try (PreparedStatement stmt = conn.prepareStatement(deleteItemsSql)) {
+                    stmt.setInt(1, poId);
+                    stmt.executeUpdate();
+                }
+
+                // Delete purchase order
+                try (PreparedStatement stmt = conn.prepareStatement(deletePoSql)) {
+                    stmt.setInt(1, poId);
+                    int affected = stmt.executeUpdate();
+                    if (affected == 0) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error deleting purchase order id=" + poId);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Check if PO can be deleted (only if SUBMITTED status)
+    public boolean canDelete(int poId) {
+        String sql = "SELECT status FROM purchase_order WHERE id = ?";
+
+        try (Connection conn = DBConnectionUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, poId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String status = rs.getString("status");
+                    // Can only delete if SUBMITTED (not yet approved/processed)
+                    return PurchaseOrderStatus.SUBMITTED.name().equals(status);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error checking PO status");
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

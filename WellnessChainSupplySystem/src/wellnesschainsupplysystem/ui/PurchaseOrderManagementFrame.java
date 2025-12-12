@@ -9,8 +9,6 @@ import wellnesschainsupplysystem.model.Product;
 import wellnesschainsupplysystem.model.PurchaseOrder;
 import wellnesschainsupplysystem.model.PurchaseOrderStatus;
 import wellnesschainsupplysystem.model.UserAccount;
-import wellnesschainsupplysystem.model.WorkRequestStatus;
-import wellnesschainsupplysystem.util.DBConnectionUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -34,6 +32,7 @@ public class PurchaseOrderManagementFrame extends JFrame {
     private DefaultTableModel tableModel;
 
     private JButton btnCreate;
+    private JButton btnDelete;  // NEW
     private JButton btnRefresh;
 
     public PurchaseOrderManagementFrame(UserAccount user) {
@@ -108,12 +107,15 @@ public class PurchaseOrderManagementFrame extends JFrame {
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnCreate = new JButton("Create & Submit PO");
+        btnDelete = new JButton("Delete PO");  // NEW
         btnRefresh = new JButton("Refresh");
 
         btnCreate.addActionListener(e -> onCreatePO());
+        btnDelete.addActionListener(e -> onDeletePO());  // NEW
         btnRefresh.addActionListener(e -> loadPOsForSelectedBranch());
 
         buttonPanel.add(btnCreate);
+        buttonPanel.add(btnDelete);  // NEW
         buttonPanel.add(btnRefresh);
 
         bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -163,6 +165,21 @@ public class PurchaseOrderManagementFrame extends JFrame {
                     po.getStatus()
             });
         }
+    }
+
+    private Integer getSelectedPoId() {
+        int row = poTable.getSelectedRow();
+        if (row < 0) return null;
+        Object value = tableModel.getValueAt(row, 0);
+        if (value instanceof Integer) return (Integer) value;
+        return Integer.parseInt(value.toString());
+    }
+
+    private PurchaseOrderStatus getSelectedPoStatus() {
+        int row = poTable.getSelectedRow();
+        if (row < 0) return null;
+        Object value = tableModel.getValueAt(row, 4);
+        return PurchaseOrderStatus.valueOf(value.toString());
     }
 
     private void onCreatePO() {
@@ -224,5 +241,50 @@ public class PurchaseOrderManagementFrame extends JFrame {
 
         txtQuantity.setText("");
         loadPOsForSelectedBranch();
+    }
+
+    // NEW: Delete Purchase Order
+    private void onDeletePO() {
+        Integer poId = getSelectedPoId();
+        if (poId == null) {
+            JOptionPane.showMessageDialog(this,
+                    "Please select a purchase order to delete.",
+                    "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        PurchaseOrderStatus status = getSelectedPoStatus();
+        if (status != PurchaseOrderStatus.SUBMITTED) {
+            JOptionPane.showMessageDialog(this,
+                    "Only SUBMITTED orders can be deleted.\n" +
+                    "This order is already " + status + ".",
+                    "Cannot Delete",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int result = JOptionPane.showConfirmDialog(this,
+                "Are you sure you want to delete Purchase Order #" + poId + "?\n" +
+                "This action cannot be undone.",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (result == JOptionPane.YES_OPTION) {
+            boolean deleted = poDao.delete(poId);
+            if (deleted) {
+                JOptionPane.showMessageDialog(this,
+                        "Purchase order deleted.",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                loadPOsForSelectedBranch();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Failed to delete purchase order.",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 }
