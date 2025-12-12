@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DBConnectionUtil {
 
     // Adjust URL / user / password if you changed them in Docker
-    private static final String URL = "jdbc:mysql://localhost:3306/wellness_chain_db";
+    private static final String URL = "jdbc:mysql://localhost:3360/wellness_chain_db";
     private static final String USER = "root";
     private static final String PASSWORD = "rootpwd";
 

@@ -1,206 +1,171 @@
-# Wellness Chain Supply System
+# Info5100 Final Project: Wellness Chain Supply System
 
-A Java Swing desktop application for managing a **multi-location wellness clinic chain** and its **supplier**, designed as a mini ecosystem to demonstrate:
+A comprehensive Java Swing application for managing multi-location wellness clinic operations and supplier coordination.
 
-- Multi-enterprise collaboration (Wellness Chain ↔ Supplier)
-- Multiple user roles (admin + staff)
-- Work requests across and within enterprises
-- Full JDBC-based CRUD with MySQL (via Docker)
-- Java OOP, Swing UI, and layered architecture
+**Recording** 
 
-> **Enterprises**
->
-> - **Wellness Chain** (multi-location clinics)
-> - **Supplier** (massage oil, linen, wellness supplies)
+## 📋 Project Description
 
-------
+### Problem Statement
+Small wellness businesses struggle to coordinate multi-location operations, staff scheduling, client appointments, and supply inventory. Communication between branches and suppliers relies on manual processes, leading to stock shortages, scheduling conflicts, and inefficient operations.
 
-## 1. Features Overview
+### Solution
+A unified platform where:
+- **Branch Admins** manage appointments, staff, and inventory
+- **Therapists** view and update their schedules
+- **Suppliers** fulfill inventory orders through a structured work request system
 
-### 1.1 Enterprises & Roles
+## 🏢 System Architecture
 
-**Enterprises**
+### Two Enterprises
+| Enterprise              | Description                                    |
+| ----------------------- | ---------------------------------------------- |
+| **Wellness Enterprise** | Chain of massage/wellness clinics (3 branches) |
+| **Supplier Enterprise** | Product supplier for wellness supplies         |
 
-1. **Wellness Chain**
-   - Branches / locations
-   - Customers / clients
-   - Therapists
-   - Appointment management
-   - Branch inventory (products at each location)
-2. **Supplier**
-   - Products catalog (e.g., massage oils, linen)
-   - Order approval
-   - Warehouse shipment workflow
+### Four Roles
+| Role           | Type   | Enterprise | Responsibilities                                             |
+| -------------- | ------ | ---------- | ------------------------------------------------------------ |
+| Branch Admin   | Admin  | Wellness   | Manage branches, customers, therapists, inventory, POs, appointments |
+| Therapist      | Normal | Wellness   | View and update appointments                                 |
+| Supplier Admin | Admin  | Supplier   | Manage products, approve/reject POs                          |
+| Supplier Staff | Normal | Supplier   | Pack, ship, deliver orders                                   |
 
-**Roles (4 total)**
+## 🔄 Cross-Enterprise Work Request Flow
 
-1. **Branch Admin** (Wellness Chain)
-   - Manage **Clinic Branches**
-   - Manage **Customers**
-   - Manage **Branch Inventory**
-   - Create **Purchase Orders** to Supplier
-   - Manage **Appointments** for Therapists
-2. **Therapist** (Wellness Chain)
-   - View **My Appointments**
-   - Mark appointments as **COMPLETED** or **CANCELLED**
-3. **Supplier Admin**
-   - Manage **Products**
-   - View **Purchase Orders**
-   - **Approve / Reject** purchase orders
-4. **Supplier Staff** (Warehouse / Fulfillment)
-   - See **Approved** purchase orders
-   - Progress shipments through:
-     - **PACKED → SHIPPED → DELIVERED**
-   - On **DELIVERED**:
-     - Updates **branch inventory**
-     - Completes **Shipment Work Request**
+```
+Branch Admin creates PO (SUBMITTED)
+         ↓
+    WorkRequest created (PURCHASE_ORDER, OPEN)
+         ↓
+Supplier Admin reviews
+         ↓
+    ┌────┴────┐
+    ↓         ↓
+APPROVED   REJECTED
+    ↓
+Supplier Staff: PACKED → SHIPPED → DELIVERED
+    ↓
+Branch Inventory automatically updated
+```
 
-------
+## 🛠️ Tech Stack
 
-## 2. Work Requests 
+- **Language**: Java 8+
+- **UI Framework**: Java Swing
+- **Database**: MySQL 8.0 (Docker)
+- **Connectivity**: JDBC (MySQL Connector/J 8+)
+- **IDE**: NetBeans (Ant build)
 
-The system implements **work requests** as real functional flows that change application state and are stored in the `work_request` table.
+## 📁 Project Structure
 
-### 2.1 Cross-Enterprise Work Requests (≥ 2)
+```
+WellnessChainSupplySystem/
+├── README.md
+├── database/
+│   ├── docker-compose.yml        # Docker MySQL setup
+│   ├── schema.sql                # Database schema (10 tables)
+│   └── seed_data.sql             # Sample test data
+├── src/
+│   └── wellnesschainsupplysystem/
+│       ├── WellnessChainSupplySystem.java
+│       ├── model/                # Data models & enums
+│       ├── dao/                  # Database access layer
+│       ├── ui/                   # Swing UI frames
+│       └── util/                 # Utilities (DB connection)
+├── diagrams/                     # UML diagrams
+└── screenshots/                  # Application screenshots
+```
 
-1. **Purchase Order Work Request**
-   - Type: `PURCHASE_ORDER`
-   - Flow:
-     - Branch Admin creates a **Purchase Order** to Supplier
-     - Automatically creates a `work_request` row
-     - Supplier Admin **approves / rejects**
-   - Tables involved:
-     - `purchase_order`
-     - `purchase_order_item`
-     - `work_request`
-2. **Shipment Work Request**
-   - Type: `SHIPMENT`
-   - Flow:
-     - Supplier Staff sees **APPROVED** POs
-     - Marks status **PACKED → SHIPPED → DELIVERED**
-     - Creates/updates `work_request` of type `SHIPMENT`
-     - On **DELIVERED**:
-       - Updates `branch_inventory`
-       - Marks shipment work request as `COMPLETED`
-   - Tables involved:
-     - `purchase_order`
-     - `purchase_order_item`
-     - `work_request`
-     - `branch_inventory`
+## 🚀 Getting Started
 
-### 2.2 Internal Work Requests (within Wellness Chain)
+### Prerequisites
+- Java JDK 8 or higher
+- Docker Desktop
+- NetBeans IDE (or any Java IDE)
+- MySQL Connector/J 8.x
 
-1. **Appointment Booking (Branch → Therapist)**
-   - Branch Admin creates **appointments**:
-     - Branch, Therapist, Customer, start/end time, notes
-   - Changes system state in `appointment` table.
-2. **Appointment Completion / Cancellation (Therapist workflow)**
-   - Therapist logs in and sees **“My Appointments”**
-   - Marks them as **COMPLETED** or **CANCELLED**
-   - Updates `appointment.status` (and is presented in the UI for reporting).
+### Database Setup
 
-> In the **presentation**, you can explicitly name these 4 flows as “Work Request 1–4”.
+1. **Start MySQL using Docker Compose:**
+```bash
+cd database
+docker-compose up -d
+```
 
+2. **Create the schema:**
+```bash
+docker exec -i wellness-mysql mysql -uroot -prootpassword wellness_chain_db < schema.sql
+```
 
+3. **Load sample data:**
+```bash
+docker exec -i wellness-mysql mysql -uroot -prootpassword wellness_chain_db < seed_data.sql
+```
 
-------
+### Running the Application
 
-## 3. Database Design
+1. Open project in NetBeans
+2. Ensure MySQL Connector/J is in the classpath
+3. Run `WellnessChainSupplySystem.java`
 
-Main tables (summary):
+### Test Accounts
 
-- `user_account` – login accounts with role
-- `clinic_branch` – wellness clinic locations
-- `customer` – wellness clients
-- `product` – supplier products
-- `branch_inventory` – stock per branch per product
-- `purchase_order` – PO header (branch → supplier)
-- `purchase_order_item` – PO items (currently 1 product per PO in UI, but table supports many)
-- `work_request` – generic work requests for POs & shipments
-- `therapist_profile` – associates therapist users with branches & specialties
-- `appointment` – therapist appointments with customers
+| Username      | Password    | Role           |
+| ------------- | ----------- | -------------- |
+| branchadmin   | password123 | BRANCH_ADMIN   |
+| therapist1    | password123 | THERAPIST      |
+| therapist2    | password123 | THERAPIST      |
+| supplieradmin | password123 | SUPPLIER_ADMIN |
+| supplierstaff | password123 | SUPPLIER_STAFF |
 
-------
+## 📊 Database Schema
 
-## 4. Default Login Accounts
+| Table                 | Description                               |
+| --------------------- | ----------------------------------------- |
+| `user_account`        | All system users with roles               |
+| `clinic_branch`       | Wellness branch locations                 |
+| `therapist_profile`   | Therapist details and branch assignment   |
+| `customer`            | Client information                        |
+| `appointment`         | Bookings between customers and therapists |
+| `product`             | Supplier product catalog                  |
+| `branch_inventory`    | Stock levels per branch                   |
+| `purchase_order`      | Orders from branches to supplier          |
+| `purchase_order_item` | Line items in purchase orders             |
+| `work_request`        | Task tracking across enterprises          |
 
-> **Note:** You can change passwords and usernames in `user_account`, but ensure they match your demo script.
+## ✅ Features Implemented
 
-### 4.1 Wellness Chain – Branch Admin
+### Branch Admin
+- [x] Manage Clinic Branches (CRUD)
+- [x] Manage Customers (CRUD)
+- [x] Manage Therapists (CRUD)
+- [x] Manage Branch Inventory (CRUD)
+- [x] Create/Delete Purchase Orders
+- [x] Manage Appointments (CRUD)
 
-- **Role**: `BRANCH_ADMIN`
-- **Username**: `branchadmin`
-- **Password**: `password123`
+### Therapist
+- [x] View Assigned Appointments
+- [x] Update Appointment Status (Complete/Cancel)
 
-**Capabilities**:
+### Supplier Admin
+- [x] Manage Products (CRUD)
+- [x] View All Purchase Orders
+- [x] Approve/Reject Purchase Orders
+- [x] View Work Requests
 
-- Manage **Clinic Branches** (CRUD)
-- Manage **Customers** (CRUD)
-- Manage **Branch Inventory** (CRUD per branch/product)
-- Create & view **Purchase Orders**
-- Manage **Appointments**:
-  - Select Branch
-  - Select Therapist
-  - Select Customer
-  - Set start/end time, notes
+### Supplier Staff
+- [x] View Approved Orders
+- [x] Mark Order as Packed
+- [x] Mark Order as Shipped
+- [x] Mark Order as Delivered (auto-updates inventory)
 
-### 4.2 Wellness Chain – Therapists
+## 👤 Author
 
-1. **Therapist 1**
-   - Role: `THERAPIST`
-   - Username: `therapist1`
-   - Password: `password123`
-2. **Therapist 2**
-   - Role: `THERAPIST`
-   - Username: `therapist2`
-   - Password: `password123`
+**Lei Luo**  
+Northeastern University Toronto  
+Master's in Information Systems
 
-**Capabilities**:
+## 📄 License
 
-- View **“My Appointments”**
-- Change appointment status:
-  - `SCHEDULED → COMPLETED`
-  - `SCHEDULED → CANCELLED`
-
-### 4.3 Supplier – Admin
-
-- **Role**: `SUPPLIER_ADMIN`
-- **Username**: `supplieradmin`
-- **Password**: `password123`
-
-**Capabilities**:
-
-- Manage **Products** (CRUD)
-- View all **Purchase Orders**
-- Approve or reject POs:
-  - `SUBMITTED → APPROVED`
-  - `SUBMITTED → REJECTED`
-
-> Approved orders become visible for **Supplier Staff** to handle shipments.
-
-### 4.4 Supplier – Staff (Warehouse / Fulfillment)
-
-- **Role**: `SUPPLIER_STAFF`
-- **Username**: `supplierstaff`
-- **Password**: `password123`
-
-**Capabilities**:
-
-- View all purchase orders in states:
-  - `APPROVED`, `PACKED`, `SHIPPED`, `DELIVERED`
-- Update shipment status:
-  - `APPROVED → PACKED`
-  - `PACKED → SHIPPED`
-  - `SHIPPED → DELIVERED`
-
-On **DELIVERED**:
-
-- Increases **branch inventory** in `branch_inventory`
-- Updates the `SHIPMENT` work request to `COMPLETED`
-- Marks PO as `DELIVERED`
-
-
-
-------
-
-## 
+This project is for educational purposes as part of the INFO 5100 Application Engineering and Development course.
