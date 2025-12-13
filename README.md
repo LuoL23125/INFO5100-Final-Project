@@ -2,7 +2,12 @@
 
 A comprehensive Java Swing application for managing multi-location wellness clinic operations and supplier coordination.
 
-**Recording** 
+## 🎬 Demo Recordings
+
+| Recording    | Link                                                         | Password   |
+| ------------ | ------------------------------------------------------------ | ---------- |
+| Presentation | ([https://northeastern.zoom.us/rec/share/BQlHTcVU1HcRZN8Gn8g59rws9R52WSZgRSGL9TmKw1xTXx7bml0_CJiB7sXkUE-1.PfN1H28Q7j2eR-_s](https://nam12.safelinks.protection.outlook.com/?url=https%3A%2F%2Fnortheastern.zoom.us%2Frec%2Fshare%2FBQlHTcVU1HcRZN8Gn8g59rws9R52WSZgRSGL9TmKw1xTXx7bml0_CJiB7sXkUE-1.PfN1H28Q7j2eR-_s&data=05\|02\|luo.lei%40northeastern.edu\|b5843dcbdb424b45a0c308de39d52273\|a8eec281aaa34daeac9b9a398b9215e7\|0\|0\|639011784727228880\|Unknown\|TWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D\|0\|\|\|&sdata=Db%2BE5Gv1oJrnD7IBWTtnzK0dAoFETAaKjsPLFMijDnE%3D&reserved=0)) | 1i@a^aTZ   |
+| Demo         | ([https://northeastern.zoom.us/rec/share/K5HVM_9FtcRkWiqbDb9u7WBG3KAB4PzG2Dfj2Z51Tqaaan3cOAOZSAlS4RCutRg.EJihTt_9bc12ZIAf](https://nam12.safelinks.protection.outlook.com/?url=https%3A%2F%2Fnortheastern.zoom.us%2Frec%2Fshare%2FK5HVM_9FtcRkWiqbDb9u7WBG3KAB4PzG2Dfj2Z51Tqaaan3cOAOZSAlS4RCutRg.EJihTt_9bc12ZIAf&data=05\|02\|luo.lei%40northeastern.edu\|351e41997e994d3a85eb08de39de1291\|a8eec281aaa34daeac9b9a398b9215e7\|0\|0\|639011823119316879\|Unknown\|TWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D\|0\|\|\|&sdata=xN7Ahbn%2FExJaexsZPkOWv%2BILzXpiM1%2BRp4rgeSRG9Wo%3D&reserved=0)) | `Mq^v28!H` |
 
 ## 📋 Project Description
 
@@ -51,39 +56,15 @@ Branch Inventory automatically updated
 
 ## 🛠️ Tech Stack
 
-- **Language**: Java 8+
+- **Language**: Java 
 - **UI Framework**: Java Swing
-- **Database**: MySQL 8.0 (Docker)
+- **Database**: MySQL  (Docker)
 - **Connectivity**: JDBC (MySQL Connector/J 8+)
 - **IDE**: NetBeans (Ant build)
 
-## 📁 Project Structure
 
-```
-WellnessChainSupplySystem/
-├── README.md
-├── database/
-│   ├── docker-compose.yml        # Docker MySQL setup
-│   ├── schema.sql                # Database schema (10 tables)
-│   └── seed_data.sql             # Sample test data
-├── src/
-│   └── wellnesschainsupplysystem/
-│       ├── WellnessChainSupplySystem.java
-│       ├── model/                # Data models & enums
-│       ├── dao/                  # Database access layer
-│       ├── ui/                   # Swing UI frames
-│       └── util/                 # Utilities (DB connection)
-├── diagrams/                     # UML diagrams
-└── screenshots/                  # Application screenshots
-```
 
 ## 🚀 Getting Started
-
-### Prerequisites
-- Java JDK 8 or higher
-- Docker Desktop
-- NetBeans IDE (or any Java IDE)
-- MySQL Connector/J 8.x
 
 ### Database Setup
 
@@ -165,7 +146,3 @@ docker exec -i wellness-mysql mysql -uroot -prootpassword wellness_chain_db < se
 **Lei Luo**  
 Northeastern University Toronto  
 Master's in Information Systems
-
-## 📄 License
-
-This project is for educational purposes as part of the INFO 5100 Application Engineering and Development course.
